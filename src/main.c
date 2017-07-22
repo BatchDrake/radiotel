@@ -19,7 +19,7 @@
 #include <rtsutil/spectrogram.h>
 #include <sys/time.h>
 
-#define RADTEL_AVG_TIME 10.0
+#define RADTEL_AVG_TIME 60.0
 #define RADTEL_BINS     2048
 
 #define RADTEL_SNAPSHOT_DIR "snapshots"
