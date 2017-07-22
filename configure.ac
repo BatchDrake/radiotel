@@ -72,8 +72,13 @@ AC_SUBST(bladeRF_LIBS)
 AC_SUBST(SDL_CFLAGS)
 AC_SUBST(SDL_LIBS)
 
+PKG_CHECK_MODULES([asoundlib], [ alsa >= 1.0.25 ], , [AC_MSG_ERROR([Couldn't find ALSA libraries])])
+AC_SUBST(asoundlib_CFLAGS)
+AC_SUBST(asoundlib_LIBS)
+
 AC_SUBST(GLOBAL_CFLAGS)
 AC_SUBST(GLOBAL_LDFLAGS)
+
 AC_OUTPUT([
   Makefile
   src/Makefile

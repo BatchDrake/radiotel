@@ -3,13 +3,15 @@
 
 bin_PROGRAMS = radiotel
 radiotel_CFLAGS = -I. -I../util -I../sim-static -I.. @GLOBAL_CFLAGS@
-radiotel_LDFLAGS = @GLOBAL_LDFLAGS@ @fftw3_LIBS@ @bladeRF_CFLAGS@
+radiotel_LDFLAGS = @GLOBAL_LDFLAGS@ @fftw3_LIBS@ @bladeRF_CFLAGS@ \
+	@asoundlib_CFLAGS@
 
 radiotel_LDADD = 						\
 	../sim-static/libsim.la 	\
 	../rtsutil/librtsutil.la 	\
 	../util/libutil.la 				\
 	@bladeRF_LIBS@					  \
+	@asoundlib_LIBS@					\
 	@GLOBAL_LDFLAGS@
 
 radiotel_SOURCES = main.c radiotel.h
