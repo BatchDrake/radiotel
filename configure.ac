@@ -65,6 +65,10 @@ PKG_CHECK_MODULES(fftw3, [fftw3 >= 3.0])
 AC_SUBST(fftw3_CFLAGS)
 AC_SUBST(fftw3_LIBS)
 
+PKG_CHECK_MODULES(bladeRF, [ libbladeRF >= 0.28 ], , [AC_MSG_ERROR([Couldn't find bladeRF libraries])])
+AC_SUBST(bladeRF_CFLAGS)
+AC_SUBST(bladeRF_LIBS)
+  
 AC_SUBST(SDL_CFLAGS)
 AC_SUBST(SDL_LIBS)
 

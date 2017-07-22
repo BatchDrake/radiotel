@@ -22,6 +22,7 @@
 #include <string.h>
 
 #include "source.h"
+#include "bladerf.h"
 
 PTR_LIST_CONST_PRIVATE(struct rts_signal_source, source);
 
@@ -94,6 +95,7 @@ rts_register_builtin_sources(void)
   RTSBOOL ok = RTS_FALSE;
 
   RTS_TRYCATCH(rts_file_source_register(), goto done);
+  RTS_TRYCATCH(rts_bladeRF_source_register(), goto done);
 
   ok = RTS_TRUE;
 
