@@ -89,7 +89,6 @@ rts_spectrogram_acquire(rts_spectrogram_t *spect)
   RTSCOUNT needed;
   RTSCOUNT got;
   RTSFLOAT psd;
-  RTSBOOL last_iter;
   int i;
 
   if (rts_spectrogram_complete(spect))
@@ -120,12 +119,8 @@ rts_spectrogram_acquire(rts_spectrogram_t *spect)
     /* Perform FFT in the current window */
     RTS_FFTW(_execute)(spect->fft_plan);
 
-    last_iter = spect->frame_count == spect->frames - 1;
-
-    if (last_iter) {
-      spect->min = INFINITY;
-      spect->max = -INFINITY;
-    }
+    spect->min = INFINITY;
+    spect->max = -INFINITY;
 
     /* Save power spectrum */
     for (i = 0; i < spect->params.bins; ++i) {
@@ -137,7 +132,7 @@ rts_spectrogram_acquire(rts_spectrogram_t *spect)
         spect->spectrum[i] += psd; /* Otherwise, accumulate */
 
       /* In last iteration before reset, update limits */
-      if (last_iter && i > 1 && i < (spect->params.bins - 2)) {
+      if (i > 1 && i < (spect->params.bins - 2)) {
         if (spect->spectrum[i] < spect->min)
           spect->min = spect->spectrum[i];
         if (spect->spectrum[i] > spect->max)
