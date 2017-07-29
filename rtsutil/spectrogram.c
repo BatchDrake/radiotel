@@ -23,6 +23,8 @@
 
 #include "spectrogram.h"
 
+#define RTS_SPECTROGRA_MAPPLY_WINDOW
+
 rts_spectrogram_t *
 rts_spectrogram_new(rts_srchnd_t *hnd, struct rts_spectrogram_params *params)
 {
@@ -83,6 +85,32 @@ rts_spectrogram_destroy(rts_spectrogram_t *spect)
   free(spect);
 }
 
+#define RTS_BLACKMANN_HARRIS_A0 0.35875
+#define RTS_BLACKMANN_HARRIS_A1 0.48829
+#define RTS_BLACKMANN_HARRIS_A2 0.14128
+#define RTS_BLACKMANN_HARRIS_A3 0.01168
+
+RTS_PRIVATE void
+rts_apply_blackmann_harris_complex(RTSCOMPLEX *h, RTSCOUNT size)
+{
+  unsigned int i;
+
+  for (i = 0; i < size; ++i)
+    h[i] *=
+          RTS_BLACKMANN_HARRIS_A0
+        - RTS_BLACKMANN_HARRIS_A1 * cos(2 * M_PI * i / (size - 1))
+        + RTS_BLACKMANN_HARRIS_A2 * cos(4 * M_PI * i / (size - 1))
+        - RTS_BLACKMANN_HARRIS_A3 * cos(6 * M_PI * i / (size - 1));
+}
+
+void
+rts_spectrogram_apply_window(rts_spectrogram_t *spect)
+{
+#ifdef RTS_SPECTROGRA_MAPPLY_WINDOW
+  rts_apply_blackmann_harris_complex(spect->window, spect->params.bins);
+#endif
+}
+
 RTSBOOL
 rts_spectrogram_acquire(rts_spectrogram_t *spect)
 {
@@ -116,6 +144,9 @@ rts_spectrogram_acquire(rts_spectrogram_t *spect)
   spect->got_samples += got;
 
   if (spect->window_ptr == spect->params.bins) {
+    /* Apply window function */
+    rts_spectrogram_apply_window(spect);
+
     /* Perform FFT in the current window */
     RTS_FFTW(_execute)(spect->fft_plan);
 
