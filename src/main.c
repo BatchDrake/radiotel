@@ -19,6 +19,8 @@
 #include <rtsutil/spectrogram.h>
 #include <sys/time.h>
 
+#define RADTEL_NIGHT_MODE
+
 #define RADTEL_AVG_TIME 60.0
 #define RADTEL_BINS     2048
 
@@ -28,7 +30,17 @@
 #define WINDOW_WIDTH  1400
 #define WINDOW_HEIGHT 800
 
-#define SPECTRUM_BACKGROUND 0x1f1f1f
+#ifdef RADTEL_NIGHT_MODE
+#  define SPECTRUM_TEXT_COLOR 0xbf0000
+#  define SPECTRUM_AXES_COLOR 0x400000
+#  define SPECTRUM_FOREGROUND 0xff0000
+#  define SPECTRUM_BACKGROUND 0x000000
+#else /* !defined(RADTEL_NIGHT_MODE) */
+#  define SPECTRUM_TEXT_COLOR 0xbfbfbf
+#  define SPECTRUM_AXES_COLOR 0x404040
+#  define SPECTRUM_FOREGROUND 0x00ff00
+#  define SPECTRUM_BACKGROUND 0x1f1f1f
+#endif /* RADTEL_NIGHT_MODE */
 
 #define SPECTRUM_X 32
 #define SPECTRUM_Y 64
@@ -92,7 +104,7 @@ radtel_redraw_spectrum(display_t *disp, const rts_spectrogram_t *spect)
       disp,
       WINDOW_WIDTH / 2 - strlen(SPECTRUM_TITLE) * 4,
       2,
-      OPAQUE(0xbfbfbf),
+      OPAQUE(SPECTRUM_TEXT_COLOR),
       OPAQUE(SPECTRUM_BACKGROUND),
       "%s",
       SPECTRUM_TITLE);
@@ -105,7 +117,7 @@ radtel_redraw_spectrum(display_t *disp, const rts_spectrogram_t *spect)
       disp,
       SPECTRUM_X + 2,
       20,
-      OPAQUE(0xbfbfbf),
+      OPAQUE(SPECTRUM_TEXT_COLOR),
       OPAQUE(SPECTRUM_BACKGROUND),
       "Time: %s UTC -- ",
       now_str);
@@ -114,7 +126,7 @@ radtel_redraw_spectrum(display_t *disp, const rts_spectrogram_t *spect)
       disp,
       SPECTRUM_X + 38 * 8,
       20,
-      OPAQUE(0xbfbfbf),
+      OPAQUE(SPECTRUM_TEXT_COLOR),
       OPAQUE(SPECTRUM_BACKGROUND),
       "dB range: %+5.1lf dB to %+5.1lf dB (%+5.1lf dB) -- ",
       min,
@@ -125,7 +137,7 @@ radtel_redraw_spectrum(display_t *disp, const rts_spectrogram_t *spect)
       disp,
       SPECTRUM_X + 83 * 8,
       20,
-      OPAQUE(0xbfbfbf),
+      OPAQUE(SPECTRUM_TEXT_COLOR),
       OPAQUE(SPECTRUM_BACKGROUND),
       "Frequency range: %lg MHz to %lg MHz (%lg MHz)",
       (RTSFLOAT) (f_lo * 1e-6),
@@ -136,7 +148,7 @@ radtel_redraw_spectrum(display_t *disp, const rts_spectrogram_t *spect)
       disp,
       SPECTRUM_X + 2,
       30,
-      OPAQUE(0xbfbfbf),
+      OPAQUE(SPECTRUM_TEXT_COLOR),
       OPAQUE(SPECTRUM_BACKGROUND),
       "Spectrum snapshot count: %d (integration window: %lg s)",
       rts_spectrogram_get_reset_count(spect),
@@ -145,12 +157,12 @@ radtel_redraw_spectrum(display_t *disp, const rts_spectrogram_t *spect)
 
   for (i = 0; i < SPECTRUM_H_DIVS; ++i) {
     x = (RTSFLOAT) i / (RTSFLOAT) SPECTRUM_H_DIVS * SPECTRUM_WIDTH + SPECTRUM_X;
-    line(disp, x, SPECTRUM_Y, x, SPECTRUM_Y + SPECTRUM_HEIGHT, OPAQUE(0x404040));
+    line(disp, x, SPECTRUM_Y, x, SPECTRUM_Y + SPECTRUM_HEIGHT, OPAQUE(SPECTRUM_AXES_COLOR));
   }
 
   for (i = 0; i < SPECTRUM_V_DIVS; ++i) {
     y = (RTSFLOAT) i / (RTSFLOAT) SPECTRUM_V_DIVS * SPECTRUM_HEIGHT + SPECTRUM_Y;
-    line(disp, SPECTRUM_X, y, SPECTRUM_X + SPECTRUM_WIDTH, y, OPAQUE(0x404040));
+    line(disp, SPECTRUM_X, y, SPECTRUM_X + SPECTRUM_WIDTH, y, OPAQUE(SPECTRUM_AXES_COLOR));
   }
 
   for (i = 0; i < RADTEL_BINS; ++i) {
@@ -168,7 +180,7 @@ radtel_redraw_spectrum(display_t *disp, const rts_spectrogram_t *spect)
     y = (1 - y) * SPECTRUM_HEIGHT + SPECTRUM_Y;
 
     if (i > 0)
-      line(disp, prev_x, prev_y, x, y, OPAQUE(0x00ff00));
+      line(disp, prev_x, prev_y, x, y, OPAQUE(SPECTRUM_FOREGROUND));
 
     prev_x = x;
     prev_y = y;
@@ -180,7 +192,7 @@ radtel_redraw_spectrum(display_t *disp, const rts_spectrogram_t *spect)
       SPECTRUM_Y,
       SPECTRUM_X + SPECTRUM_WIDTH - 1,
       SPECTRUM_Y + SPECTRUM_HEIGHT - 1,
-      OPAQUE(0xbfbfbf));
+      OPAQUE(SPECTRUM_TEXT_COLOR));
 
   fbox(
       disp,
@@ -190,7 +202,7 @@ radtel_redraw_spectrum(display_t *disp, const rts_spectrogram_t *spect)
       + (SPECTRUM_PROGRESS_WIDTH - 1)
       * rts_spectrogram_get_progress(spect),
       SPECTRUM_PROGRESS_Y + SPECTRUM_PROGRESS_HEIGHT - 1,
-      OPAQUE(0x00ff00));
+      OPAQUE(SPECTRUM_FOREGROUND));
 
   box(
       disp,
@@ -198,7 +210,7 @@ radtel_redraw_spectrum(display_t *disp, const rts_spectrogram_t *spect)
       SPECTRUM_PROGRESS_Y,
       SPECTRUM_PROGRESS_X + SPECTRUM_PROGRESS_WIDTH - 1,
       SPECTRUM_PROGRESS_Y + SPECTRUM_PROGRESS_HEIGHT - 1,
-      OPAQUE(0xbfbfbf));
+      OPAQUE(SPECTRUM_TEXT_COLOR));
 
   display_refresh(disp);
 }
