@@ -295,6 +295,8 @@ rts_bladeRF_open(const rts_params_t *params, struct rts_signal_source_info *info
     return NULL;
   }
 
+  bladerf_params.fc = info->freq;
+
   if ((str = rts_params_get(params, "vga1")) != NULL)
     if (sscanf(str, "%i", &bladerf_params.vga1) < 1) {
       fprintf(

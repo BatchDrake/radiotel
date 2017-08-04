@@ -23,7 +23,8 @@
 
 #include "spectrogram.h"
 
-#define RTS_SPECTROGRA_MAPPLY_WINDOW
+#define RTS_SPECTROGRAM_APPLY_WINDOW
+#define RTS_SPECTROGRAM_DC_BINS 10
 
 rts_spectrogram_t *
 rts_spectrogram_new(rts_srchnd_t *hnd, struct rts_spectrogram_params *params)
@@ -106,7 +107,7 @@ rts_apply_blackmann_harris_complex(RTSCOMPLEX *h, RTSCOUNT size)
 void
 rts_spectrogram_apply_window(rts_spectrogram_t *spect)
 {
-#ifdef RTS_SPECTROGRA_MAPPLY_WINDOW
+#ifdef RTS_SPECTROGRAM_APPLY_WINDOW
   rts_apply_blackmann_harris_complex(spect->window, spect->params.bins);
 #endif
 }
@@ -163,7 +164,8 @@ rts_spectrogram_acquire(rts_spectrogram_t *spect)
         spect->spectrum[i] += psd; /* Otherwise, accumulate */
 
       /* In last iteration before reset, update limits */
-      if (i > 1 && i < (spect->params.bins - 2)) {
+      if (i >= (RTS_SPECTROGRAM_DC_BINS / 2)
+          && i < (spect->params.bins - (RTS_SPECTROGRAM_DC_BINS / 2))) {
         if (spect->spectrum[i] < spect->min)
           spect->min = spect->spectrum[i];
         if (spect->spectrum[i] > spect->max)
