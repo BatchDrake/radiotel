@@ -27,8 +27,13 @@
 #define RADTEL_SNAPSHOT_DIR "snapshots"
 #define RADTEL_SNAPSHOT_TMP_BMP "/tmp/.spectrogram.bmp"
 
-#define WINDOW_WIDTH  1400
-#define WINDOW_HEIGHT 800
+#if RADTEL_FULL_SCREEN
+#  define WINDOW_WIDTH  1920
+#  define WINDOW_HEIGHT 1080
+#else
+#  define WINDOW_WIDTH  1400
+#  define WINDOW_HEIGHT 800
+#endif
 
 #ifdef RADTEL_NIGHT_MODE
 #  define SPECTRUM_TEXT_COLOR 0xbf0000

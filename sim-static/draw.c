@@ -66,7 +66,11 @@ try_sdl_opengl (int width, int height)
 static SDL_Surface *
 try_sdl_traditional (int width, int height)
 {
+#ifdef RADTEL_FULL_SCREEN
+  return SDL_SetVideoMode (width, height, 32, SDL_DOUBLEBUF | SDL_HWSURFACE | SDL_FULLSCREEN);
+#else
   return SDL_SetVideoMode (width, height, 32, SDL_DOUBLEBUF | SDL_HWSURFACE);
+#endif
 }
 
 display_t *
